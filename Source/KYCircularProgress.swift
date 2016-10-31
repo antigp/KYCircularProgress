@@ -176,12 +176,14 @@ open class KYCircularProgress: UIView {
     }
     
     fileprivate func configureProgressLayer() {
+        
         progressView = KYCircularShapeView(frame: bounds)
         progressView.shapeLayer.fillColor = UIColor.clear.cgColor
         progressView.shapeLayer.path = path?.cgPath
         progressView.shapeLayer.lineWidth = CGFloat(lineWidth)
         progressView.shapeLayer.strokeColor = tintColor.cgColor
-
+        self.addSubview(progressView)
+        
         gradientLayer = CAGradientLayer(layer: layer)
         gradientLayer.frame = progressView.frame
         gradientLayer.startPoint = CGPoint(x: 0, y: 0.5)
@@ -199,7 +201,8 @@ open class KYCircularProgress: UIView {
             progressGuideView!.shapeLayer.path = progressView.shapeLayer.path
             progressGuideView!.shapeLayer.lineWidth = CGFloat(guideLineWidth)
             progressGuideView!.shapeLayer.strokeColor = tintColor.cgColor
-
+            self.addSubview(progressGuideView!)
+            
             guideLayer = CAGradientLayer(layer: layer)
             guideLayer!.frame = progressGuideView!.frame
             guideLayer!.mask = progressGuideView!.shapeLayer
@@ -225,6 +228,19 @@ open class KYCircularProgress: UIView {
             convertedColors = [UIColor(rgba: 0x9ACDE7FF).cgColor, UIColor(rgba: 0xE7A5C9FF).cgColor]
         }
         gradientLayer.colors = convertedColors
+    }
+    
+    
+    open override func layoutSubviews() {
+        super.layoutSubviews()
+        progressView.frame.size = self.bounds.size
+        progressView.shapeLayer.frame.size = self.bounds.size
+        gradientLayer.frame = progressView.frame
+        progressGuideView?.frame.size = self.bounds.size
+        progressGuideView?.shapeLayer.frame.size = self.bounds.size
+        guideLayer?.frame = progressGuideView?.frame ?? .zero
+        progressGuideView?.setNeedsLayout()
+        progressView.setNeedsLayout()
     }
 }
 
@@ -256,8 +272,8 @@ class KYCircularShapeView: UIView {
         if startAngle == endAngle {
             endAngle = startAngle + (M_PI * 2)
         }
-
-        shapeLayer.path = shapeLayer.path ?? layoutPath().cgPath
+        
+        shapeLayer.path = layoutPath().cgPath
     }
     
     private func layoutPath() -> UIBezierPath {
