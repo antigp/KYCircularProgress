@@ -182,7 +182,6 @@ open class KYCircularProgress: UIView {
         progressView.shapeLayer.path = path?.cgPath
         progressView.shapeLayer.lineWidth = CGFloat(lineWidth)
         progressView.shapeLayer.strokeColor = tintColor.cgColor
-        self.addSubview(progressView)
         
         gradientLayer = CAGradientLayer(layer: layer)
         gradientLayer.frame = progressView.frame
@@ -201,7 +200,6 @@ open class KYCircularProgress: UIView {
             progressGuideView!.shapeLayer.path = progressView.shapeLayer.path
             progressGuideView!.shapeLayer.lineWidth = CGFloat(guideLineWidth)
             progressGuideView!.shapeLayer.strokeColor = tintColor.cgColor
-            self.addSubview(progressGuideView!)
             
             guideLayer = CAGradientLayer(layer: layer)
             guideLayer!.frame = progressGuideView!.frame
@@ -248,6 +246,7 @@ open class KYCircularProgress: UIView {
 class KYCircularShapeView: UIView {
     var startAngle = 0.0
     var endAngle = 0.0
+    var halfWidth:CGFloat = 0.0
     
     override class var layerClass : AnyClass {
         return CAShapeLayer.self
@@ -272,12 +271,13 @@ class KYCircularShapeView: UIView {
         if startAngle == endAngle {
             endAngle = startAngle + (M_PI * 2)
         }
-        
-        shapeLayer.path = layoutPath().cgPath
+        if halfWidth != CGFloat(frame.width / 2.0) {
+            shapeLayer.path = layoutPath().cgPath
+        }
     }
     
     private func layoutPath() -> UIBezierPath {
-        let halfWidth = CGFloat(frame.width / 2.0)
+        halfWidth = CGFloat(frame.width / 2.0)
         return UIBezierPath(arcCenter: CGPoint(x: halfWidth, y: halfWidth), radius: halfWidth - shapeLayer.lineWidth, startAngle: CGFloat(startAngle), endAngle: CGFloat(endAngle), clockwise: true)
     }
     
